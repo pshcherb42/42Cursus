@@ -5,87 +5,91 @@
 #                                                     +:+ +:+         +:+      #
 #    By: pshcherb <pshcherb@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/09/12 15:45:04 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/01/30 12:59:56 by pshcherb         ###   ########.fr        #
+#    Created: 2024/09/18 18:00:47 by pshcherb          #+#    #+#              #
+#    Updated: 2025/06/06 19:16:05 by pshcherb         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: pshcherb <pshcherb@student.42.fr>          +#+  +:+       +#+        #
+#                                                 +#+#+#+#+#+   +#+           #
+#    Created: 2024/09/18 18:00:47 by pshcherb          #+#    #+#              #
+#    Updated: 2025/02/15 12:37:23 by pshcherb         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
 
-SRC = ft_itoa.c \
-	  ft_strchr.c \
-	  ft_strdup.c \
-	  ft_strjoin.c \
-	  ft_strmapi.c \
-	  ft_strnstr.c \
-	  ft_strchr.c \
-	  ft_strrchr.c \
-	  ft_substr.c \
-	  ft_split.c \
-	  ft_atoi.c \
-	  ft_isalnum.c \
-	  ft_isalpha.c \
-	  ft_isascii.c \
-	  ft_isdigit.c \
-	  ft_isprint.c \
-	  ft_isspace.c \
-	  ft_isvalidsign.c \
-	  ft_memcmp.c \
-	  ft_tolower.c \
-	  ft_toupper.c \
-	  ft_strncmp.c \
-	  ft_strlcat.c \
-	  ft_strlcpy.c \
-	  ft_strlen.c \
-	  ft_bzero.c \
-	  ft_calloc.c \
-	  ft_memchr.c \
-	  ft_memcpy.c \
-	  ft_memmove.c \
-	  ft_memset.c \
-	  ft_putchar_fd.c \
-	  ft_putendl_fd.c \
-	  ft_putnbr_fd.c \
-	  ft_putstr_fd.c \
-	  ft_striteri.c \
-	  ft_strtrim.c \
-	  ft_free.c \
-	  get_next_line.c
+CC = cc
+FLAGS = -Wall -Werror -Wextra 
 
-OBJ = $(SRC:.c=.o)
+SRCS =	get_next_line.c \
+	get_next_line_utils.c \
+	ft_printf.c \
+	ft_printf_utils.c \
+	ft_array_count.c \
+	ft_strndup.c \
+	ft_strnlen.c \
+	ft_isspace.c \
+	ft_isalpha.c \
+	ft_isdigit.c \
+	ft_isalnum.c \
+	ft_isascii.c \
+	ft_isprint.c \
+	ft_strlen.c \
+	ft_memset.c \
+	ft_bzero.c \
+	ft_memcpy.c \
+	ft_memmove.c \
+	ft_strlcpy.c \
+	ft_strlcat.c \
+	ft_toupper.c \
+	ft_tolower.c \
+	ft_strchr.c \
+	ft_strrchr.c \
+	ft_strncmp.c \
+	ft_memchr.c \
+	ft_memcmp.c \
+	ft_strnstr.c \
+	ft_atoi.c \
+	ft_calloc.c \
+	ft_strdup.c \
+	ft_substr.c \
+	ft_strjoin.c \
+	ft_strtrim.c \
+	ft_split.c \
+	ft_itoa.c \
+	ft_strmapi.c \
+	ft_striteri.c \
+	ft_putchar_fd.c \
+	ft_putstr_fd.c \
+	ft_putendl_fd.c \
+	ft_putnbr_fd.c \
+	ft_strcmp.c \
 
-BONUS = ft_lstnew_bonus.c \
-		ft_lstadd_front_bonus.c \
-		ft_lstlast_bonus.c \
-		ft_lstadd_back_bonus.c \
-		ft_lstdelone_bonus.c \
-		ft_lstclear_bonus.c \
-		ft_lstiter_bonus.c \
-		ft_lstmap_bonus.c \
-		ft_stacksize_bonus.c \
-
-BONUS_OBJ = $(BONUS:.c=.o)
-
-CC = gcc -Wall -Werror -Wextra
-
-%.o: %.c libft.h Makefile
-	$(CC) -I. -c $< -o $(<:.c=.o)
-
+OBJS =	$(SRCS:.c=.o)
+DEPS =	$(SRCS:.c=.d)
 
 all: $(NAME)
 
-bonus: $(NAME) $(BONUS_OBJ)
-	ar rcs $(NAME) $(BONUS_OBJ)
+$(NAME):    $(OBJS)
+	ar rcs $(NAME) $(OBJS)
 
-$(NAME): $(OBJ) 
-	ar rcs $(NAME) $(OBJ)
+%.o: %.c Makefile libft.h
+	$(CC) $(FLAGS) -MMD -c $< -o $@
 
 clean:
-	rm -f $(OBJ) $(BONUS_OBJ)
-
+	rm -f $(OBJS) $(DEPS)
+    
 fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: all, clean, fclean, re
+.PHONY: all fclean clean re
+
+-include $(DEPS)

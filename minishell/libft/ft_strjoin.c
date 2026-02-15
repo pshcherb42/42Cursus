@@ -3,40 +3,43 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42barcelon      +#+  +:+       +#+        */
+/*   By: pshcherb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/16 17:42:02 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2024/10/22 20:11:23 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2024/09/28 22:35:51 by pshcherb          #+#    #+#             */
+/*   Updated: 2024/09/28 22:49:17 by pshcherb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "libft.h"
+#include <stdlib.h>
 
-char	*ft_strjoin(char *s1, char *s2)
+static size_t	ft_str_copy(char *dest, const char *src, size_t start)
 {
-	char	*str;
 	size_t	i;
-	size_t	c;
 
-	if (!s1)
+	i = 0;
+	while (src[i] != '\0')
 	{
-		s1 = malloc(sizeof(char) + 1);
-		if (!s1)
-			return (0);
-		s1[0] = 0;
+		dest[start + i] = src[i];
+		i++;
 	}
-	str = (char *)malloc(sizeof(char) * ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!str)
-	{
-		ft_free((char **)&s1);
+	return (start + i);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t	len_s1;
+	size_t	len_s2;
+	char	*s3;
+
+	if (!s1 || !s2)
 		return (NULL);
-	}
-	i = -1;
-	while (s1[++i])
-		str[i] = s1[i];
-	c = -1;
-	while (s2[++c])
-		str[i + c] = s2[c];
-	str[i + c] = '\0';
-	return (str);
+	len_s1 = ft_strlen(s1);
+	len_s2 = ft_strlen(s2);
+	s3 = (char *)malloc(sizeof(char) * (len_s1 + len_s2 + 1));
+	if (!s3)
+		return (NULL);
+	ft_str_copy(s3, s1, 0);
+	ft_str_copy(s3, s2, len_s1);
+	s3[len_s1 + len_s2] = '\0';
+	return (s3);
 }

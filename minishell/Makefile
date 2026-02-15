@@ -5,59 +5,98 @@
 #                                                     +:+ +:+         +:+      #
 #    By: pshcherb <pshcherb@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/01/27 20:09:36 by pshcherb          #+#    #+#              #
-#    Updated: 2025/01/30 18:46:09 by pshcherb         ###   ########.fr        #
+#    Created: 2025/06/06 19:15:22 by pshcherb          #+#    #+#              #
+#    Updated: 2025/06/09 15:30:37 by pshcherb         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = push_swap
-CC = gcc 
-RM = rm -f
-FLAGS = -Wall -Wextra -Werror -g
-LIBFTDIR = libft/
-FT_PRINTFDIR = printf/
-OBJ_DIR = obj/
-SRC_DIR = src/
+NAME = minishell
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 
-SRC_1 = srcs/push_swap/push_swap.c \
-		srcs/push_swap/init_stack.c \
-		srcs/push_swap/ft_checksorted.c \
-		srcs/push_swap/ft_sort.c \
-		srcs/push_swap/ft_sort_small.c \
+LIBFT = libft/libft.a
 
-SRC_2 = srcs/utils/operations.c \
-		srcs/utils/max_bits.c \
-		srcs/utils/ft_free_stack.c \
-		srcs/utils/find_last_node.c \
-		srcs/utils/error_syntax.c \
-		srcs/utils/ft_atoi2.c \
-		srcs/utils/sort_utils.c \
-		srcs/utils/pos_max_min.c \
+SRCS = \
+	main/main.c \
+	main/init.c \
+	main/env_utils.c \
+	main/input.c \
+	main/shell_loop.c \
+	main/env_list.c \
+	main/env_list_to_array.c \
+	main/env_list_utils.c \
+	parser/parser.c \
+	parser/parser_utils.c \
+	parser/cmd_utils.c \
+	parser/split_pipe.c \
+	parser/tokenizer.c \
+	parser/process_token.c \
+	parser/redirection.c \
+	parser/parser_state.c \
+	parser/expand.c \
+	parser/expand_utils.c \
+	parser/env_lookup.c \
+	parser/lexer_expand.c \
+	parser/lexer_init.c \
+	parser/lexer_copy.c \
+	parser/lexer_parse.c \
+	parser/split_args.c \
+	parser/find_invalid_token.c \
+	parser/process_segment.c \
+	parser/check_invalid_op_seq.c \
+	parser/split_pipe_utils.c \
+	parser/lexer_token.c \
+	parser/lexer_utils.c \
+	parser/redirection_heredoc.c \
+	executor/builtin_utils.c \
+	executor/ft_cd.c \
+	executor/cd_utils.c \
+	executor/cd_utils_2.c \
+	executor/cd_utils_3.c \
+	executor/ft_echo.c \
+	executor/ft_env.c \
+	executor/ft_exit.c \
+	executor/ft_export.c \
+	executor/export_utils.c \
+	executor/export_add_eq.c \
+	executor/export_utils_2.c \
+	executor/ft_get_cmd_path.c \
+	executor/ft_pwd.c \
+	executor/ft_unset.c \
+	executor/exec.c \
+	executor/exec_pipeline.c \
+	executor/pipeline_utils.c \
+	executor/open_redirs.c \
+	executor/exec_child.c \
+	executor/child_utils.c \
+	executor/builtin.c \
+	executor/exec_utils.c \
+	signals/signals.c \
+	redirection/heredoc.c \
+	redirection/heredoc_utils.c \
+	redirection/tmp_heredoc.c \
+	utils/utils.c \
+	utils/utils2.c
 
-OBJ_1 = ${SRC_1:.c=.o}
-OBJ_2 = ${SRC_2:.c=.o}
+OBJS = $(SRCS:.c=.o)
+DEPS = $(SRCS:.c=.d)
 
-INCLUDE = -L ./libft -lft -L ./printf -lftprintf
+$(NAME): $(OBJS) Makefile minishell.h $(LIBFT)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) -lreadline
 
-.c.o:
-	${CC} -c $< -o ${<:.c=.o}
+$(LIBFT):
+		make -C libft
 
-${NAME}: ${OBJ_1} ${OBJ_2}
-	make -C ./libft
-	make -C ./printf
-	${CC} ${FLAGS} ${OBJ_1} ${OBJ_2} -o ${NAME} ${INCLUDE} 
-all: ${NAME}
+all: $(NAME)
 
-clean:	
-	${RM} ${OBJ_1} ${OBJ_2} ${NAME}
-	@cd $(LIBFTDIR) && $(MAKE) clean
-	@cd $(FT_PRINTFDIR) && $(MAKE) clean
+clean:
+	rm -f $(OBJS)
+	make clean -C libft
 
-fclean:	clean
-	${RM} ${NAME}
-	@cd $(LIBFTDIR) && $(MAKE) clean
-	@cd $(FT_PRINTFDIR) && $(MAKE) clean
+fclean: clean
+	rm -f $(NAME)
+	make fclean -C libft
 
-re: clean all
+re: fclean all
 
-.PHONY: all clean fclean re 
+.PHONY: all clean fclean re

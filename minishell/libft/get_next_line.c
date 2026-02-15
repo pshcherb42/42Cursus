@@ -3,98 +3,106 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42barcelon      +#+  +:+       +#+        */
+/*   By: pshcherb <pshcherb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/15 13:20:24 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2024/10/15 13:20:25 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2024/11/14 10:34:34 by pshcherb          #+#    #+#             */
+/*   Updated: 2025/02/28 11:01:18 by pshcherb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "get_next_line.h"
 
-char	*ft_free_gnl(char **str)
+char	*ft_free(char *buf, char *buffer)
 {
-	free(*str);
-	*str = NULL;
-	return (NULL);
+	char	*temp;
+
+	temp = gnl_strjoin(buffer, buf);
+	free(buffer);
+	return (temp);
 }
 
-char	*new_stash(char *stash)
+char	*ft_next(char *buffer)
 {
-	int		len;
-	char	*nstash;
-	char	*ptr;
+	int		i;
+	int		j;
+	char	*new_buffer;
 
-	ptr = ft_strchr(stash, '\n');
-	if (!ptr)
+	i = 0;
+	while (buffer[i] && buffer[i] != '\n')
+		i++;
+	if (!buffer[i])
 	{
-		nstash = NULL;
-		return (ft_free_gnl(&stash));
-	}
-	else
-		len = (ptr - stash) + 1;
-	if (!stash[len])
-		return (ft_free_gnl(&stash));
-	nstash = ft_substr(stash, len, ft_strlen(stash) - len);
-	ft_free_gnl(&stash);
-	if (!nstash)
+		free(buffer);
 		return (NULL);
-	return (nstash);
+	}
+	new_buffer = ft_gnl_calloc((gnl_strlen(buffer) - i + 1), sizeof(char));
+	i++;
+	j = 0;
+	while (buffer[i])
+		new_buffer[j++] = buffer[i++];
+	free(buffer);
+	return (new_buffer);
 }
 
-char	*make_line(char *stash)
+char	*ft_line(char *buffer)
 {
 	char	*line;
-	char	*ptr;
-	int		len;
+	int		i;
 
-	ptr = ft_strchr(stash, '\n');
-	len = (ptr - stash) + 1;
-	line = ft_substr(stash, 0, len);
-	if (!line)
+	i = 0;
+	if (!buffer[i])
 		return (NULL);
+	while (buffer[i] && buffer[i] != '\n')
+		i++;
+	line = ft_gnl_calloc(i + 2, sizeof(char));
+	i = 0;
+	while (buffer[i] && buffer[i] != '\n')
+	{
+		line[i] = buffer[i];
+		i++;
+	}
+	if (buffer[i] && buffer[i] == '\n')
+		line[i++] = '\n';
 	return (line);
 }
 
-char	*read_buf(int fd, char *stash)
+char	*ft_read_file(int fd, char *res)
 {
-	int		rb;
 	char	*buffer;
+	int		bytes_read;
 
-	rb = 1;
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (ft_free_gnl(&stash));
-	buffer[0] = '\0';
-	while (rb > 0 && !ft_strchr(buffer, '\n'))
+	if (!res)
+		res = ft_gnl_calloc(1, 1);
+	buffer = ft_gnl_calloc(BUFFER_SIZE + 1, sizeof(char));
+	bytes_read = 1;
+	while (bytes_read > 0)
 	{
-		rb = read(fd, buffer, BUFFER_SIZE);
-		if (rb > 0)
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read < 0)
 		{
-			buffer[rb] = '\0';
-			stash = ft_strjoin(stash, buffer);
+			free(buffer);
+			return (NULL);
 		}
+		buffer[bytes_read] = '\0';
+		res = ft_free(buffer, res);
+		if (gnl_strchr(buffer, '\n'))
+			break ;
 	}
 	free(buffer);
-	if (rb == -1)
-		return (ft_free_gnl(&stash));
-	return (stash);
+	return (res);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash[FOPEN_MAX];
+	static char	*buffer;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE < 1)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return (NULL);
-	if ((stash[fd] && !ft_strchr(stash[fd], '\n')) || !stash[fd])
-		stash[fd] = read_buf(fd, stash[fd]);
-	if (!stash[fd])
+	buffer = ft_read_file(fd, buffer);
+	if (!buffer)
 		return (NULL);
-	line = make_line(stash[fd]);
-	if (!line)
-		return (ft_free_gnl(&stash[fd]));
-	stash[fd] = new_stash(stash[fd]);
+	line = ft_line(buffer);
+	buffer = ft_next(buffer);
 	return (line);
 }

@@ -3,62 +3,53 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42barcelon      +#+  +:+       +#+        */
+/*   By: pshcherb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/17 09:28:46 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2024/09/17 09:55:53 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2024/09/29 16:32:23 by pshcherb          #+#    #+#             */
+/*   Updated: 2024/09/29 17:12:03 by pshcherb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "libft.h"
+#include <stdlib.h>
 
-static int	ft_nbrlen(long n)
+static int	ft_num_len(int n)
 {
-	int	i;
+	int	len;
 
-	i = 1;
-	if (n < 0)
-	{
-		n *= -1;
-		i++;
-	}
-	while (n > 9)
+	len = 0;
+	if (n <= 0)
+		len++;
+	while (n != 0)
 	{
 		n /= 10;
-		i++;
+		len++;
 	}
-	return (i);
-}
-
-static void	ft_putnbr(long n, char *str, int *i)
-{
-	if (n > 9)
-	{
-		ft_putnbr(n / 10, str, i);
-		ft_putnbr(n % 10, str, i);
-	}
-	else
-		str[(*i)++] = n + '0';
+	return (len);
 }
 
 char	*ft_itoa(int n)
 {
-	char	*str;
-	int		i;
-	long	nbr;
+	char		*s;
+	size_t		len;
+	long		num;
 
-	nbr = n;
-	str = (char *)malloc(sizeof(char) * (ft_nbrlen(nbr) + 1));
-	if (str == NULL)
+	len = ft_num_len(n);
+	s = (char *)malloc(sizeof(char) * (len + 1));
+	if (!s)
 		return (NULL);
-	i = 0;
-	if (nbr < 0)
+	num = n;
+	s[len] = '\0';
+	if (num < 0)
 	{
-		str[i] = '-';
-		nbr *= -1;
-		i++;
+		s[0] = '-';
+		num = -num;
 	}
-	ft_putnbr(nbr, str, &i);
-	str[i] = '\0';
-	return (str);
+	if (num == 0)
+		s[0] = '0';
+	while (num > 0)
+	{
+		s[--len] = (num % 10) + 48;
+		num /= 10;
+	}
+	return (s);
 }

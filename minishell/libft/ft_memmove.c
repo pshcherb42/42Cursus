@@ -3,27 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42barcelon      +#+  +:+       +#+        */
+/*   By: pshcherb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/12 10:07:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2024/09/12 10:26:55 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2024/09/22 14:21:55 by pshcherb          #+#    #+#             */
+/*   Updated: 2024/09/22 14:35:38 by pshcherb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "libft.h"
 
-void	*ft_memmove(void *dest, const void *src, size_t n)
+static void	ft_memmove_forward(unsigned char *dst,
+				const unsigned char *src,
+				size_t len)
 {
-	const unsigned char	*s;
-	unsigned char		*d;
+	size_t	i;
 
-	if (dest == NULL && src == NULL)
+	i = 0;
+	while (i < len)
+	{
+		dst[i] = src[i];
+		i++;
+	}
+}
+
+static void	ft_memmove_backward(unsigned char *dst,
+				const unsigned char *src,
+				size_t len)
+{
+	while (len > 0)
+	{
+		len--;
+		dst[len] = src[len];
+	}
+}
+
+void	*ft_memmove(void *dst, const void *src, size_t len)
+{
+	if (!dst && !src)
 		return (NULL);
-	if (src >= dest)
-		return (ft_memcpy(dest, src, n));
-	s = (unsigned char *)src;
-	d = (unsigned char *)dest;
-	while (n--)
-		d[n] = s[n];
-	return (dest);
+	if (dst < src)
+		ft_memmove_forward((unsigned char *)dst,
+			(const unsigned char *)src,
+			len);
+	else
+		ft_memmove_backward((unsigned char *)dst,
+			(const unsigned char *)src,
+			len);
+	return (dst);
 }

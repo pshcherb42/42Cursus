@@ -3,96 +3,92 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42barcelon      +#+  +:+       +#+        */
+/*   By: pshcherb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/17 08:30:57 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2024/09/23 13:39:51 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2024/09/28 23:28:30 by pshcherb          #+#    #+#             */
+/*   Updated: 2024/09/29 00:04:46 by pshcherb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "libft.h"
+#include <stdlib.h>
 
-static char	**memal(size_t words)
+static size_t	ft_count_words(char const *s, char c)
 {
-	char	**res;
+	size_t	count;
+	int		in_substring;
 
-	res = (char **)malloc((words + 1) * sizeof (char *));
-	if (res == NULL)
-		return (NULL);
-	res[words] = ((void *)0);
-	return (res);
-}
-
-static char	**memfree(char **res, size_t words)
-{
-	while (words > 0)
-	{
-		free(res[--words]);
-	}
-	free(res);
-	return (NULL);
-}
-
-static size_t	word_count(char const *s, char c)
-{
-	size_t	counter;
-	short	in_word;
-
-	counter = 0;
-	in_word = 0;
+	count = 0;
+	in_substring = 0;
 	while (*s)
 	{
-		if (*s == c)
-			in_word = 0;
-		else if (!in_word)
+		if (*s != c && in_substring == 0)
 		{
-			counter++;
-			in_word = 1;
+			in_substring = 1;
+			count++;
 		}
+		else if (*s == c)
+			in_substring = 0;
 		s++;
 	}
-	return (counter);
+	return (count);
 }
 
-static char	**split(char const *s, char c, char **res)
+static size_t	ft_word_len(char const *s, char c)
+{
+	size_t	len;
+
+	len = 0;
+	while (s[len] && s[len] != c)
+		len++;
+	return (len);
+}
+
+static char	**ft_allocate_words(char **result,
+					char const *s, char c, size_t word_count)
 {
 	size_t	i;
-	size_t	j;
-	char	*buf;
-	size_t	word_counter;
+	size_t	word_len;
 
-	word_counter = 0;
 	i = 0;
-	while (s[i] != '\0')
+	while (i < word_count)
 	{
-		j = i;
-		while (s[j] != '\0' && s[j] != c)
-			j++;
-		if (j != i)
-		{
-			buf = ft_substr(s, i, (j - i));
-			if (buf == NULL)
-				return (memfree(res, word_counter));
-			res[word_counter++] = buf;
-		}
-		while (s[j] != '\0' && s[j] == c)
-			j++;
-		i = j;
+		while (*s == c)
+			s++;
+		word_len = ft_word_len(s, c);
+		result[i] = (char *)malloc(sizeof(char) * (word_len + 1));
+		if (!result[i])
+			return (NULL);
+		ft_strlcpy(result[i], s, word_len + 1);
+		s += word_len;
+		i++;
 	}
-	return (res);
+	return (result);
+}
+
+static void	ft_free_all(char **result, size_t i)
+{
+	i = 0;
+	while (result[i])
+		free(result[i++]);
+	free(result);
 }
 
 char	**ft_split(char const *s, char c)
 {
 	char	**result;
+	size_t	word_count;
 
-	if (!s && !c)
+	if (!s)
 		return (NULL);
-	result = memal(word_count(s, c));
-	if (result == NULL)
+	word_count = ft_count_words(s, c);
+	result = (char **)malloc(sizeof(char *) * (word_count + 1));
+	if (!result)
 		return (NULL);
-	result = split(s, c, result);
-	if (result == NULL)
+	if (!ft_allocate_words(result, s, c, word_count))
+	{
+		ft_free_all(result, word_count);
 		return (NULL);
+	}
+	result[word_count] = NULL;
 	return (result);
 }

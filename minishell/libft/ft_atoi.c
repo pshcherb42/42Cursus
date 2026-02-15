@@ -3,46 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42barcelon      +#+  +:+       +#+        */
+/*   By: pshcherb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/10 12:33:16 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2024/10/15 13:19:13 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2024/09/22 19:04:32 by pshcherb          #+#    #+#             */
+/*   Updated: 2024/09/22 19:24:40 by pshcherb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "libft.h"
-#include <limits.h>
 
-/*static int	ft_max_int_return(int sign)
+static int	ft_skipwhites(const char *str, int i)
 {
-	if (sign == -1)
-		return (0);
-	return (-1);
-}*/
+	while (str[i] == ' ' || str[i] == '\n' || str[i] == '\t'
+		|| str[i] == '\v' || str[i] == '\f' || str[i] == '\r')
+		i++;
+	return (i);
+}
+
+static int	ft_sign(const char *str, int *i)
+{
+	int	sign;
+
+	sign = 1;
+	if (str[*i] == '-' || str[*i] == '+')
+	{
+		if (str[*i] == '-')
+			sign = -1;
+		(*i)++;
+	}
+	return (sign);
+}
 
 int	ft_atoi(const char *str)
 {
-	int			sign;
-	int			i;
-	long int	n;
+	int	i;
+	int	sign;
+	int	result;
 
 	i = 0;
-	n = 0;
-	sign = 1;
-	while (ft_isspace(str[i]))
-		i++;
-	while (str[i] == '-' || str[i] == '+')
+	result = 0;
+	i = ft_skipwhites(str, i);
+	sign = ft_sign(str, &i);
+	while (str[i] >= '0' && str[i] <= '9')
 	{
-		if (str[i + 1] == '-' || str[i + 1] == '+')
-			return (0);
-		if (str[i] == '-')
-			sign *= -1;
+		result = result * 10 + (str[i] - '0');
 		i++;
 	}
-	while (str[i] >= '0' && str[i] <= '9')
-		n = (n * 10) + (str[i++] - '0');
-	n *= sign;
-	if (n > INT_MAX || n < INT_MIN)
-		return (-1);
-	return (n);
+	return ((int)(result * sign));
 }
