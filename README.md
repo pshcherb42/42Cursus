@@ -108,7 +108,7 @@ The 42 Common Core is an intensive, self-taught, project-based curriculum focuse
 |`🏗️`|[**cpp's 0-4**](https://github.com/pshcherb42/42Cursus/tree/main/CPP/CPP00-04)| Basics of C++ and its fundamental features |C++|<a href="#"><img src="https://img.shields.io/badge/86-blue"></a>|--|`Aug'25`|
 ||`milestone 4`||||||
 |`🧩`|[**inception**]()| Contain multiple Docker containers |Docker, Docker Compose, NGINX, WordPress, MariaDB, Redis, FTP, Adminer, Netdata|||`'26`|
-|`💬`|[**ft_irc**]()| Implement a functional IRC server |C++, Sockets, Multiplexación de E/S (usando select), HTTP/1.1 (para Webserv), Protocolo IRC (para el servidor IRC), Makefile|||`'26`|
+|`💬`|[**ft_irc**]()| Implement a functional IRC server |C++, Sockets, Multiplexación de E/S (usando select), HTTP/1.1 (para Webserv), Protocolo IRC (para el servidor IRC), Makefile|<a href="#"><img src="https://img.shields.io/badge/100-blue"></a>|<a href="#"><img src="https://img.shields.io/badge/110-blue"></a>|`Mar'26`|
 |`🏗️`|[**cpp's 5-9**]()| Explore advanced C++ and STL |C++|<a href="#"><img src="https://img.shields.io/badge/100-blue"></a>|--|`Mar'26`|
 |`🔖`|[**exam-rank-5**]()| Assessment of skills in C and C++ ||<a href="#"><img src="https://img.shields.io/badge/100-blue"></a>|--|`Mar'26`|
 ||`milestone 5`||||||
