@@ -6,14 +6,14 @@ Actualiza tus repositorios e instala los paquetes necesarios para manejar reposi
 apt install ca-certificates curl gnupg
 
 Configurar el repositorio oficial de Docker
-# Crear directorio para llaves
+Crear directorio para llaves
 install -m 0755 -d /etc/apt/keyrings
 
-# Descargar la llave GPG oficial
+Descargar la llave GPG oficial
 curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 chmod a+r /etc/apt/keyrings/docker.gpg
 
-# Añadir el repositorio a tus fuentes de APT
+Añadir el repositorio a tus fuentes de APT
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
@@ -31,3 +31,6 @@ apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-co
 
 Docker Container Fundamentals
 https://www.nxp.com/docs/en/supporting-information/DOCKER-CONTAINER-FUNDAMENTALS.pdf
+
+What is and why use Docker Compose
+https://anderfernandez.com/blog/tutorial-docker-compose/
