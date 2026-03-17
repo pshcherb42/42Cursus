@@ -5,3 +5,6 @@
 # Instructions
 
 # Resources
+
+Docker Container Fundamentals
+https://www.nxp.com/docs/en/supporting-information/DOCKER-CONTAINER-FUNDAMENTALS.pdf
