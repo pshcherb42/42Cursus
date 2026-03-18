@@ -24,6 +24,20 @@ echo \
   apt update
 apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+Cómo funciona Docker Compose
+
+Para crear un Docker Compose necesitamos crear un fichero docker-compose.yml. Este fichero es donde indicaremos qué servicios queremos que se ejecuten y de qué manera.
+
+En este sentido, comentar que Docker Compose cuenta con varios apartados:
+
+Definición de la versión (Opcional, deprecado)
+Servicios (Requerido)
+Redes
+Volúmenes
+Configs
+Secrets
+
+
 
 # Instructions
 
