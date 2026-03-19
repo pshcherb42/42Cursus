@@ -37,7 +37,22 @@ Volúmenes
 Configs
 Secrets
 
+Create A Docker Image And Run It As Container
+Follow the below steps to create a Docker Image and run a Container:
 
+Step 1: Create a Dockerfile.
+
+Step 2: Run the following command in the terminal and it will create a docker image of the application and download all the necessary dependencies needed for the application to run successfully.
+
+docker build -t <name>:<tag> 
+This will start building the image.
+
+Step 3:  We have successfully created a Dockerfile and a respective Docker image for the same.
+
+Step 4: Run the following command in the terminal and it will create a running container with all the needed dependencies and start the application.
+
+docker run -p 9000:80 <image-name>:<tag> 
+The 9000 is the port we want to access our application on. 80 is the port the container is exposing for the host to access.
 
 # Instructions
 
