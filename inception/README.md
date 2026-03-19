@@ -48,3 +48,6 @@ https://www.nxp.com/docs/en/supporting-information/DOCKER-CONTAINER-FUNDAMENTALS
 
 What is and why use Docker Compose
 https://anderfernandez.com/blog/tutorial-docker-compose/
+
+What is Docker image?
+https://www.geeksforgeeks.org/devops/what-is-docker-image/
