@@ -1,5 +1,51 @@
-version: 3.2
+version: '3.8'
 
 services:
-  service1: 
-    
+  nginx:
+    build: ./services/nginx
+    image: nginx
+    container_name: nginx
+    depends_on:
+      - wordpress
+    networks:
+      - inception 
+    ports:
+      -"443:443"
+    volumes:
+      -wordpress_data:var/www/html/wordpress
+    restrart: unless-stopped
+
+  wordpress:
+    build: ./services/wordpress
+    image: wordpress
+    container_name: wordpress
+    depend_on:
+      -mariadb
+    networks:
+      -inception
+    volumes:
+      -wordpress_data:/var/www/html/wordpress
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  mariadb:
+    build: -/services/mariadb
+    image: mariadb
+    container_name: mariadb
+    networks:
+      -inception
+    volumes:
+      -mariadb_data:/var/lib/mysql
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  volumes:
+    wordpress_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: /home/pshcherb42/data/wordpress  
+  

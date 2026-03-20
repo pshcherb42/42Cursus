@@ -69,3 +69,6 @@ https://www.geeksforgeeks.org/devops/what-is-docker-image/
 
 Nginx
 https://es.wikipedia.org/wiki/Nginx
+
+nginx-dockerfile
+https://www.datacamp.com/es/tutorial/nginx-docker
