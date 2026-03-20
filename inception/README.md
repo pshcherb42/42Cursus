@@ -66,3 +66,6 @@ https://anderfernandez.com/blog/tutorial-docker-compose/
 
 What is Docker image?
 https://www.geeksforgeeks.org/devops/what-is-docker-image/
+
+Nginx
+https://es.wikipedia.org/wiki/Nginx
