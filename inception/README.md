@@ -31,6 +31,11 @@ protocol." Con los protocolos de seguridad nos ocupamos despues en nginx.conf.
 
 Ahora con las dependencias. Tenemos que preguntarnos que necesita cada servicio para arrancar? Nginx necesita algo?-si, necesita php de wordpress para enviar requests. Vale, y wordpress, necesita algo para arrancar? - si, una base de datos, para guardar/leer datos. Llegamos a mariaDB , necesita algo para arrancar? - no. Ya sabes el orden de dependencias. Es una cuestion de arquitectura y logica.
 
+<img width="457" height="480" alt="Image" src="https://github.com/user-attachments/assets/354d414d-e0d4-4a57-9c70-4c23f1b0f742" />
+
+env_file: permite añadir variables de entorno al contenedor basado en uno a varios ficheros .env, tambien podemos definir las variables manualmente con environment: pero es mala practica porque asi estariamos dejando las llaves de casa en la puerta en vez de guardarlas en un sitio seguro. Solo nginx NO necesita env_file porque no tiene acceso a ninguna informacion sensible, solo manda php requests y escucha en el puerto. 
+
+
 
 # Instructions
 
@@ -53,3 +58,9 @@ https://www.datacamp.com/es/tutorial/nginx-docker
 
 WordPress
 https://es.wikipedia.org/wiki/WordPress
+
+MariaDB en Docker: guía de in­s­ta­la­ción paso a paso
+https://www.ionos.com/es-us/digitalguide/hosting/cuestiones-tecnicas/mariadb-en-docker/
+
+Levantar un WordPress con Compose
+https://aulasoftwarelibre.github.io/taller-de-docker/docker-compose/#estructura-de-la-configuracion
