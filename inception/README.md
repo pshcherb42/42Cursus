@@ -15,9 +15,13 @@ Y para seguir vamos a ajustar nuestra estructura de carpetas. Dentro de srcs cre
 
 <img width="286" height="476" alt="Image" src="https://github.com/user-attachments/assets/785abb34-005a-41b3-a3cf-36c32bd4ccf0" />
 
-Ahora podemos seguir con el siguente campo de build: aqui escribimos la ruta del Dockerfile, y tambien rellenamos el campo de image: con el nombre del servicio, normalmente si tenemos campo build: no necesitariamos el campo image:, pero lo añadimos porque el subject nos pide "Each Docker image must have the same name as its corresponding service." Va a quedar asi:
+Ahora podemos seguir con el siguente campo de build: aqui escribimos la ruta del Dockerfile, y tambien rellenamos el campo de image: con el nombre del servicio, normalmente si tenemos campo build: no necesitariamos el campo image:, pero lo añadimos porque el subject nos pide "Each Docker image must have the same name as its corresponding service."Va a quedar asi:
 
+<img width="354" height="299" alt="Image" src="https://github.com/user-attachments/assets/c483ecd1-03f7-459d-8357-dbc624725bb5" />
 
+Y lo mismo para el campo de container_name:, docker ps nos muestra los contenedores que estan funcionando y les crea nombres automaticamente tipo srcs-mariadb-1, con container_name: le decimos a docker llama a este seervicio de tal manera, pero para networking features no tiene ninguna importancia, como si lo llamaramos unicornio.
+
+Seguimos con la opcion restart:, el subject nos dice "Your containers have to restart in case of a crash.", hay tres opciones que nos podrian servir - always, unless-stopped y on-failure. Vamos a elegir unless-stopped porque always reinicia incluso si paramos manualmente y on-failure tambien reincia incluso si lo paramos manualmente y ademas no reinicia si el codigo de error es 0, asi que unless-stopped es la mejor version porque reincia siempre excepto si lo paramos manualmente.
 
 
 
