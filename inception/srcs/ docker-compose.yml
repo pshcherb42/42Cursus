@@ -1,51 +1,36 @@
-version: '3.8'
-
 services:
   nginx:
-    build: ./services/nginx
+    build: ./requirements/nginx
     image: nginx
     container_name: nginx
-    depends_on:
-      - wordpress
-    networks:
-      - inception 
+    restart: unless-stopped
     ports:
       -"443:443"
-    volumes:
-      -wordpress_data:var/www/html/wordpress
-    restrart: unless-stopped
+    depends_on:
+      - wordpress
+    
 
   wordpress:
-    build: ./services/wordpress
+    build: ./requirements/wordpress
     image: wordpress
     container_name: wordpress
-    depend_on:
-      -mariadb
-    networks:
-      -inception
-    volumes:
-      -wordpress_data:/var/www/html/wordpress
+    restart: unless-stopped
+    depends_on:
+      - mariadb
     env_file:
       - .env
-    restart: unless-stopped
+    volumes:
+      - wordpress:/var/www/html
 
   mariadb:
-    build: -/services/mariadb
+    build: ./requirements/mariadb
     image: mariadb
     container_name: mariadb
-    networks:
-      -inception
-    volumes:
-      -mariadb_data:/var/lib/mysql
+    restart: unless-stopped
     env_file:
       - .env
-    restart: unless-stopped
+    volumes:
+      - mariadb_data:/var/lib/mysql
 
-  volumes:
-    wordpress_data:
-      driver: local
-      driver_opts:
-        type: none
-        o: bind
-        device: /home/pshcherb42/data/wordpress  
+ 
   
