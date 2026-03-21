@@ -45,6 +45,10 @@ Dentro de Driver_opts: especificamos la ruta /home/login/data. Type: cual sistem
   <img width="488" height="695" alt="Image" src="https://github.com/user-attachments/assets/5886a382-70cf-4b0a-9404-ab71fc2bea2d" />
 </div>
 
+Networks: se usa para decirle a los servicios el canal por el que pueden comunicarse. A cada servicio le indicamos a que network pertenece. En la seccion networks indicamos configuracion de cada network. Driver: bridge comportamiento predefinido. Asi quedaria docker_compose.yaml completo:
+
+
+
 # Instructions
 
 # Resources
