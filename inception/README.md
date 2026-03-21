@@ -13,6 +13,12 @@ Escribimos services: y los servicios que no pide el subject, deberia quedar asi(
 
 Y para seguir vamos a ajustar nuestra estructura de carpetas. Dentro de srcs creamo scarpeta services(o cualquier otro nombre, eso no importa) y dentro de services creamos tres carpetas cada una con nombre dep servicio correspondiente(o cualquier otro nombre). Y dentro de cada carpeta creamos Dokerfile(asi sin extencion, ese si tiene que tener ese nombre). Quedaria asi la estrucutra del proyecto:
 
+<img width="286" height="476" alt="Image" src="https://github.com/user-attachments/assets/785abb34-005a-41b3-a3cf-36c32bd4ccf0" />
+
+Ahora podemos seguir con el siguente campo de build: aqui escribimos la ruta del Dockerfile, y tambien rellenamos el campo de image: con el nombre del servicio, normalmente si tenemos campo build: no necesitariamos el campo image:, pero lo añadimos porque el subject nos pide "Each Docker image must have the same name as its corresponding service." Va a quedar asi:
+
+
+
 
 
 # Instructions
