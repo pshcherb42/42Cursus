@@ -39,6 +39,8 @@ Con volumes: todo es un poco mas complicado. Como concepto es simple, son archiv
 
 Dentro de Driver_opts: especificamos la ruta /home/login/data. Type: cual sistema de ficheros usar para montar? puede ser none- usa el sitema de ficheros existente, nfs- network file system, tmpfs- temporary, ext4 - linux filesystem(para cada sistema operativo seria diferente). O: opciones extra, bind significa copiar los datos al fichero existente(/home/login/data/wordpress  ←→  /var/www/html/wordpress), un aes ruta en el host y la otra en contenedor, el contenedor no sabe que existe home,dentro del contenedor esta ruta no existe, por eso necesitamos dos rutas separadas con la misma informacion. El volumen sirve como traductor entre dos idiomas diferentes. 
 
+<img width="429" height="247" alt="Image" src="https://github.com/user-attachments/assets/de5586a0-858d-4d88-b74f-dcb347e3cf01" />
+
 # Instructions
 
 # Resources
