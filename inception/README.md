@@ -35,7 +35,20 @@ Ahora con las dependencias. Tenemos que preguntarnos que necesita cada servicio 
 
 env_file: permite añadir variables de entorno al contenedor basado en uno a varios ficheros .env, tambien podemos definir las variables manualmente con environment: pero es mala practica porque asi estariamos dejando las llaves de casa en la puerta en vez de guardarlas en un sitio seguro. Solo nginx NO necesita env_file porque no tiene acceso a ninguna informacion sensible, solo manda php requests y escucha en el puerto. 
 
+Con volumes: todo es un poco mas complicado. Como concepto es simple, son archivos de nuestro local que seran copiados al contenedor. Los necesitamos para que cuando apaguemos el contendor no perder los datos. Docker compose crea volumenes automaticamente pero despues de docker rm los elimina, con volumes: seguimos teniendo los datos para backup o backend. A veces las rutas son predefenidas como en el caso de la base de datos, y otras veces podemos crear nuestars propias rutas como en caso de pagina web y servidor, pero vamos a usar la ruta predefenida en ambos casos solo por la comodidad. Primer parametro de volumes es el nombre del volumen, mariadb_data para la base de datos y wordpress_data para la web. Nginx y wordpress comparten el mismo volumen, porque nginx necesita leer archivos php de wordpress, mariadb no comunica con nadie, solo necesita persistir sus propios archivos. Bind mount are options for volume which we are not authorized to use. We can safe volumes on cloud, on our machine, on network server... etc. In the subject specified the route we need to use to safe volumes and is /home/login/data, so for driver: we use local.
 
+Dentro de Driver_opts: especificamos la ruta /home/login/data. Type: cual sistema de ficheros usar para montar? puede ser none- usa el sitema de ficheros existente, nfs- network file system, tmpfs- temporary, ext4 - linux filesystem(para cada sistema operativo seria diferente). O: opciones extra, bind significa copiar los datos al fichero existente(/home/login/data/wordpress  ←→  /var/www/html/wordpress), un aes ruta en el host y la otra en contenedor, el contenedor no sabe que existe home,dentro del contenedor esta ruta no existe, por eso necesitamos dos rutas separadas con la misma informacion. El volumen sirve como traductor entre dos idiomas diferentes. 
+
+<div>
+  <img width="429" height="247" alt="Image" src="https://github.com/user-attachments/assets/de5586a0-858d-4d88-b74f-dcb347e3cf01" />
+  <br>
+  <img width="488" height="695" alt="Image" src="https://github.com/user-attachments/assets/5886a382-70cf-4b0a-9404-ab71fc2bea2d" />
+</div>
+
+Networks: se usa para decirle a los servicios el canal por el que pueden comunicarse. A cada servicio le indicamos a que network pertenece. En la seccion networks indicamos configuracion de cada network. Driver: bridge comportamiento predefinido. Asi quedaria docker_compose.yaml completo:
+
+<img width="436" height="575" alt="Image" src="https://github.com/user-attachments/assets/cab7437c-efc3-4fc3-b323-18fd619fd991" />
+<img width="422" height="580" alt="Image" src="https://github.com/user-attachments/assets/b782b66f-7439-481f-911e-284b8593f506" />
 
 # Instructions
 
@@ -64,3 +77,9 @@ https://www.ionos.com/es-us/digitalguide/hosting/cuestiones-tecnicas/mariadb-en-
 
 Levantar un WordPress con Compose
 https://aulasoftwarelibre.github.io/taller-de-docker/docker-compose/#estructura-de-la-configuracion
+
+Define and manage volumes in Docker Compose
+https://docs.docker.com/reference/compose-file/volumes/
+
+Bind mounts
+https://docs.docker.com/engine/storage/bind-mounts/
