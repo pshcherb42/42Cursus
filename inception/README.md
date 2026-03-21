@@ -23,6 +23,13 @@ Y lo mismo para el campo de container_name:, docker ps nos muestra los contenedo
 
 Seguimos con la opcion restart:, el subject nos dice "Your containers have to restart in case of a crash.", hay tres opciones que nos podrian servir - always, unless-stopped y on-failure. Vamos a elegir unless-stopped porque always reinicia incluso si paramos manualmente y on-failure tambien reincia incluso si lo paramos manualmente y ademas no reinicia si el codigo de error es 0, asi que unless-stopped es la mejor version porque reincia siempre excepto si lo paramos manualmente.
 
+<img width="388" height="412" alt="Image" src="https://github.com/user-attachments/assets/a6a8dea3-f319-43b4-bce1-68c028a0cfe3" />
+
+ports: permite indicar que puertos se van a exponer al host. El subject dice que "Your NGINX container must be the only entrypoint into your
+infrastructure via the port 443 only, using the TLSv1.2 or TLSv1.3
+protocol." Con los protocolos de seguridad nos ocupamos despues en nginx.conf. 
+
+Ahora con las dependencias. Tenemos que preguntarnos que necesita cada servicio para arrancar? Nginx necesita algo?-si, necesita php de wordpress para enviar requests. Vale, y wordpress, necesita algo para arrancar? - si, una base de datos, para guardar/leer datos. Llegamos a mariaDB , necesita algo para arrancar? - no. Ya sabes el orden de dependencias. Es una cuestion de arquitectura y logica.
 
 
 # Instructions
@@ -43,3 +50,6 @@ https://es.wikipedia.org/wiki/Nginx
 
 nginx-dockerfile
 https://www.datacamp.com/es/tutorial/nginx-docker
+
+WordPress
+https://es.wikipedia.org/wiki/WordPress
