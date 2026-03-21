@@ -8,6 +8,10 @@ services:
       -"443:443"
     depends_on:
       - wordpress
+    volumes:
+      - wordpress_data:/var/www/html/wordpress
+    networks:
+      - inception
     
 
   wordpress:
@@ -20,7 +24,9 @@ services:
     env_file:
       - .env
     volumes:
-      - wordpress:/var/www/html
+      - wordpress_data:/var/www/html/wordpress
+    networks:
+      - inception
 
   mariadb:
     build: ./requirements/mariadb
@@ -31,6 +37,24 @@ services:
       - .env
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      - inception
 
+  volumes:
+    mariadb_data:
+      driver: local
+      driver_opts: 
+        type: none
+        o: bind
+        device: /home/pshcherb/data/mariadb
+    wordpress_data:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: /home/pshcherb/data/wordpress
  
+  networks:
+    inception:
+      driver: bridge
   
