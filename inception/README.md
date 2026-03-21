@@ -41,6 +41,8 @@ Dentro de Driver_opts: especificamos la ruta /home/login/data. Type: cual sistem
 
 <img width="429" height="247" alt="Image" src="https://github.com/user-attachments/assets/de5586a0-858d-4d88-b74f-dcb347e3cf01" />
 
+<img width="488" height="695" alt="Image" src="https://github.com/user-attachments/assets/5886a382-70cf-4b0a-9404-ab71fc2bea2d" />
+
 # Instructions
 
 # Resources
