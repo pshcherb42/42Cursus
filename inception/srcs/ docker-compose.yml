@@ -1,60 +1,136 @@
 services:
+
+  # ── MANDATORY SERVICES ──────────────────────────────────────────────────────
+
   nginx:
     build: ./requirements/nginx
     image: nginx
     container_name: nginx
-    restart: unless-stopped
-    ports:
-      -"443:443"
     depends_on:
       - wordpress
-    volumes:
-      - wordpress_data:/var/www/html/wordpress
     networks:
       - inception
-    
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/html/wordpress
+    restart: unless-stopped
 
   wordpress:
     build: ./requirements/wordpress
     image: wordpress
     container_name: wordpress
-    restart: unless-stopped
     depends_on:
       - mariadb
-    env_file:
-      - .env
-    volumes:
-      - wordpress_data:/var/www/html/wordpress
+      - redis
     networks:
       - inception
+    volumes:
+      - wordpress_data:/var/www/html/wordpress
+    env_file:
+      - .env
+    restart: unless-stopped
 
   mariadb:
     build: ./requirements/mariadb
     image: mariadb
     container_name: mariadb
-    restart: unless-stopped
-    env_file:
-      - .env
-    volumes:
-      - mariadb_data:/var/lib/mysql
     networks:
       - inception
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    env_file:
+      - .env
+    restart: unless-stopped
 
-  volumes:
-    mariadb_data:
-      driver: local
-      driver_opts: 
-        type: none
-        o: bind
-        device: /home/pshcherb/data/mariadb
-    wordpress_data:
-      driver: local
-      driver_opts:
-        type: none
-        o: bind
-        device: /home/pshcherb/data/wordpress
- 
-  networks:
-    inception:
-      driver: bridge
-  
+  # ── BONUS SERVICES ───────────────────────────────────────────────────────────
+
+  redis:
+    build: ./requirements/redis
+    image: redis
+    container_name: redis
+    networks:
+      - inception
+    restart: unless-stopped
+
+  ftp:
+    build: ./requirements/ftp
+    image: ftp
+    container_name: ftp
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    volumes:
+      - wordpress_data:/var/www/html/wordpress
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  static-site:
+    build: ./requirements/static-site
+    image: static-site
+    container_name: static-site
+    networks:
+      - inception
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+  adminer:
+    build: ./requirements/adminer
+    image: adminer
+    container_name: adminer
+    depends_on:
+      - mariadb
+    networks:
+      - inception
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  portainer:
+    build: ./requirements/portainer
+    image: portainer
+    container_name: portainer
+    networks:
+      - inception
+    ports:
+      - "9000:9000"
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+
+# ── VOLUMES ──────────────────────────────────────────────────────────────────
+
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/login/data/wordpress
+
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/login/data/mariadb
+
+  portainer_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/login/data/portainer
+
+# ── NETWORK ──────────────────────────────────────────────────────────────────
+
+networks:
+  inception:
+    driver: bridge
