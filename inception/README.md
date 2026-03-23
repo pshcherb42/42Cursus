@@ -1,85 +1,201 @@
-*This project was created as a part of 42 cursus by pshcherb*
+*This project has been created as part of the 42 curriculum by pshcherb.*
 
-# Description
+---
 
-Empezamos por la esructura del proyecto. Se dice en el subject que la carpeta tiene que tener dentro otra carpeta que se llame srcs - "All the files required for the configuration of your project must be placed in a srcs
-folder." y que Makefile tiene que estar en el root. 
+## Description
 
-Dentro de srcs creamos docker_compose.yml (acosnsejo escribir docker_compose.yml a mano, nada de copiar y pegar, porque Docker es muy sensible con el tema de espacios y tabulacion), este va a ser como el main que va utilizar el docker para crear contendores. Arriba del todo antes se escribia la version de docker compose que en este caso no lo vamos a hacer porque es una practica anticuada, Docker actual ignora este campo igualmente.
+Inception is a system administration project from the 42 school curriculum. The goal is to set up a small but complete web infrastructure using **Docker** and **Docker Compose**, entirely inside a virtual machine.
 
-Escribimos services: y los servicios que no pide el subject, deberia quedar asi(cada campo subyacente tiene 2 espacios de separacion):
+The infrastructure consists of three services running in dedicated containers:
 
-<img width="400" height="257" alt="Image" src="https://github.com/user-attachments/assets/ca7db17a-2b40-4718-a93a-a2b1c33f13ef" />
+- **NGINX** — the sole entry point, serving HTTPS traffic on port 443 using TLSv1.2 or TLSv1.3 only
+- **WordPress + php-fpm** — the web application layer, running without NGINX
+- **MariaDB** — the relational database storing all WordPress data
 
-Y para seguir vamos a ajustar nuestra estructura de carpetas. Dentro de srcs creamo scarpeta services(o cualquier otro nombre, eso no importa) y dentro de services creamos tres carpetas cada una con nombre dep servicio correspondiente(o cualquier otro nombre). Y dentro de cada carpeta creamos Dokerfile(asi sin extencion, ese si tiene que tener ese nombre). Quedaria asi la estrucutra del proyecto:
+All images are built from scratch using custom Dockerfiles based on Debian Bookworm (penultimate stable release). No pre-built images are pulled from DockerHub or any registry (except the base Debian image).
 
-<img width="286" height="476" alt="Image" src="https://github.com/user-attachments/assets/785abb34-005a-41b3-a3cf-36c32bd4ccf0" />
+### Project Description
 
-Ahora podemos seguir con el siguente campo de build: aqui escribimos la ruta del Dockerfile, y tambien rellenamos el campo de image: con el nombre del servicio, normalmente si tenemos campo build: no necesitariamos el campo image:, pero lo añadimos porque el subject nos pide "Each Docker image must have the same name as its corresponding service."Va a quedar asi:
+#### Use of Docker
 
-<img width="354" height="299" alt="Image" src="https://github.com/user-attachments/assets/c483ecd1-03f7-459d-8357-dbc624725bb5" />
+Docker is used to isolate each service into its own container, giving each one a clean, reproducible environment. Docker Compose orchestrates the three containers, their shared network, and their persistent volumes. Each `Dockerfile` is written manually and called through the `docker-compose.yml`, which is itself invoked by the `Makefile`.
 
-Y lo mismo para el campo de container_name:, docker ps nos muestra los contenedores que estan funcionando y les crea nombres automaticamente tipo srcs-mariadb-1, con container_name: le decimos a docker llama a este seervicio de tal manera, pero para networking features no tiene ninguna importancia, como si lo llamaramos unicornio.
+The source files included in the project are:
 
-Seguimos con la opcion restart:, el subject nos dice "Your containers have to restart in case of a crash.", hay tres opciones que nos podrian servir - always, unless-stopped y on-failure. Vamos a elegir unless-stopped porque always reinicia incluso si paramos manualmente y on-failure tambien reincia incluso si lo paramos manualmente y ademas no reinicia si el codigo de error es 0, asi que unless-stopped es la mejor version porque reincia siempre excepto si lo paramos manualmente.
+- `Makefile` — entry point that builds and runs the entire infrastructure
+- `srcs/docker-compose.yml` — defines services, volumes, and the network
+- `srcs/.env` — environment variables (credentials, configuration)
+- `srcs/requirements/nginx/` — Dockerfile and NGINX configuration
+- `srcs/requirements/wordpress/` — Dockerfile and WordPress setup script
+- `srcs/requirements/mariadb/` — Dockerfile and MariaDB initialization script
 
-<img width="388" height="412" alt="Image" src="https://github.com/user-attachments/assets/a6a8dea3-f319-43b4-bce1-68c028a0cfe3" />
+#### Main Design Choices
 
-ports: permite indicar que puertos se van a exponer al host. El subject dice que "Your NGINX container must be the only entrypoint into your
-infrastructure via the port 443 only, using the TLSv1.2 or TLSv1.3
-protocol." Con los protocolos de seguridad nos ocupamos despues en nginx.conf. 
+- NGINX is the **only exposed service** (port 443). WordPress and MariaDB are only reachable internally through the Docker network.
+- **WP-CLI** is used inside the WordPress container to automate installation — no manual setup required.
+- A **startup loop** in the WordPress script waits for MariaDB to be truly ready before attempting to connect, compensating for the limitation of `depends_on`.
+- Named volumes use `driver: local` with `driver_opts` to store data at a specific host path (`/home/login/data/`) as required by the project rules.
 
-Ahora con las dependencias. Tenemos que preguntarnos que necesita cada servicio para arrancar? Nginx necesita algo?-si, necesita php de wordpress para enviar requests. Vale, y wordpress, necesita algo para arrancar? - si, una base de datos, para guardar/leer datos. Llegamos a mariaDB , necesita algo para arrancar? - no. Ya sabes el orden de dependencias. Es una cuestion de arquitectura y logica.
+---
 
-<img width="457" height="480" alt="Image" src="https://github.com/user-attachments/assets/354d414d-e0d4-4a57-9c70-4c23f1b0f742" />
+#### Virtual Machines vs Docker
 
-env_file: permite añadir variables de entorno al contenedor basado en uno a varios ficheros .env, tambien podemos definir las variables manualmente con environment: pero es mala practica porque asi estariamos dejando las llaves de casa en la puerta en vez de guardarlas en un sitio seguro. Solo nginx NO necesita env_file porque no tiene acceso a ninguna informacion sensible, solo manda php requests y escucha en el puerto. 
+| | Virtual Machine | Docker Container |
+|--|----------------|-----------------|
+| Isolation | Full OS-level isolation | Process-level isolation |
+| Size | GBs (includes full OS) | MBs (shares host kernel) |
+| Startup time | Minutes | Seconds |
+| Use case | Run different OS, full environments | Run isolated applications |
+| Overhead | High (hypervisor + full OS) | Low (shares host kernel) |
 
-Con volumes: todo es un poco mas complicado. Como concepto es simple, son archivos de nuestro local que seran copiados al contenedor. Los necesitamos para que cuando apaguemos el contendor no perder los datos. Docker compose crea volumenes automaticamente pero despues de docker rm los elimina, con volumes: seguimos teniendo los datos para backup o backend. A veces las rutas son predefenidas como en el caso de la base de datos, y otras veces podemos crear nuestars propias rutas como en caso de pagina web y servidor, pero vamos a usar la ruta predefenida en ambos casos solo por la comodidad. Primer parametro de volumes es el nombre del volumen, mariadb_data para la base de datos y wordpress_data para la web. Nginx y wordpress comparten el mismo volumen, porque nginx necesita leer archivos php de wordpress, mariadb no comunica con nadie, solo necesita persistir sus propios archivos. Bind mount are options for volume which we are not authorized to use. We can safe volumes on cloud, on our machine, on network server... etc. In the subject specified the route we need to use to safe volumes and is /home/login/data, so for driver: we use local.
+A VM virtualizes the entire hardware stack and runs a full operating system. Docker containers share the host kernel and only package the application and its dependencies, making them much lighter and faster to start.
 
-Dentro de Driver_opts: especificamos la ruta /home/login/data. Type: cual sistema de ficheros usar para montar? puede ser none- usa el sitema de ficheros existente, nfs- network file system, tmpfs- temporary, ext4 - linux filesystem(para cada sistema operativo seria diferente). O: opciones extra, bind significa copiar los datos al fichero existente(/home/login/data/wordpress  ←→  /var/www/html/wordpress), un aes ruta en el host y la otra en contenedor, el contenedor no sabe que existe home,dentro del contenedor esta ruta no existe, por eso necesitamos dos rutas separadas con la misma informacion. El volumen sirve como traductor entre dos idiomas diferentes. 
+#### Secrets vs Environment Variables
 
-<div>
-  <img width="429" height="247" alt="Image" src="https://github.com/user-attachments/assets/de5586a0-858d-4d88-b74f-dcb347e3cf01" />
-  <br>
-  <img width="488" height="695" alt="Image" src="https://github.com/user-attachments/assets/5886a382-70cf-4b0a-9404-ab71fc2bea2d" />
-</div>
+| | Environment Variables | Secrets |
+|--|----------------------|---------|
+| Storage | Plain text in `.env` file | Encrypted at rest |
+| Access | Any process in the container | Only mounted to specific services |
+| Use case | Development, school projects | Production systems |
+| Tools | Docker `.env`, `env_file` | Docker Swarm secrets, Vault, AWS Secrets Manager |
 
-Networks: se usa para decirle a los servicios el canal por el que pueden comunicarse. A cada servicio le indicamos a que network pertenece. En la seccion networks indicamos configuracion de cada network. Driver: bridge comportamiento predefinido. Asi quedaria docker_compose.yaml completo:
+Environment variables (used in this project via `.env`) are simple and practical for development but store credentials in plain text. In production, secrets managers encrypt sensitive values and expose them only to authorized services, reducing the risk of credential leaks.
 
-<img width="436" height="575" alt="Image" src="https://github.com/user-attachments/assets/cab7437c-efc3-4fc3-b323-18fd619fd991" />
-<img width="422" height="580" alt="Image" src="https://github.com/user-attachments/assets/b782b66f-7439-481f-911e-284b8593f506" />
+#### Docker Network vs Host Network
 
-# Instructions
+| | Docker Network (bridge) | Host Network |
+|--|------------------------|-------------|
+| Isolation | Containers have their own network namespace | Containers share the host network stack |
+| Port mapping | Explicit (`ports:` field) | No mapping needed, uses host ports directly |
+| Security | Better — containers are isolated | Weaker — full access to host network |
+| Use case | Most containerized applications | High-performance scenarios needing raw network access |
 
-# Resources
+This project uses a **bridge network** (`inception`) so containers can communicate with each other by service name while remaining isolated from the outside world. Only NGINX exposes a port to the host (`443:443`).
 
-Docker Container Fundamentals
-https://www.nxp.com/docs/en/supporting-information/DOCKER-CONTAINER-FUNDAMENTALS.pdf
+#### Docker Volumes vs Bind Mounts
 
-What is and why use Docker Compose
-https://anderfernandez.com/blog/tutorial-docker-compose/
+| | Named Volumes | Bind Mounts |
+|--|--------------|-------------|
+| Managed by | Docker | You (host filesystem) |
+| Syntax | `volume_name:/path` | `./host/path:/container/path` |
+| Portability | High — works on any machine | Low — depends on host directory structure |
+| Performance | Better | Slightly lower |
+| Allowed in this project | ✅ Yes | ❌ No |
 
-What is Docker image?
-https://www.geeksforgeeks.org/devops/what-is-docker-image/
+This project uses **named volumes** with `driver_opts` to store data at `/home/login/data/` on the host. This satisfies both the requirement of using named volumes and the requirement of storing data at a specific host path.
 
-Nginx
-https://es.wikipedia.org/wiki/Nginx
+---
 
-nginx-dockerfile
-https://www.datacamp.com/es/tutorial/nginx-docker
+## Instructions
 
-WordPress
-https://es.wikipedia.org/wiki/WordPress
+### Prerequisites
 
-MariaDB en Docker: guía de in­s­ta­la­ción paso a paso
-https://www.ionos.com/es-us/digitalguide/hosting/cuestiones-tecnicas/mariadb-en-docker/
+- A Linux virtual machine (Debian or Ubuntu recommended)
+- Docker Engine installed
+- Docker Compose v2 installed
+- `make` installed
 
-Levantar un WordPress con Compose
-https://aulasoftwarelibre.github.io/taller-de-docker/docker-compose/#estructura-de-la-configuracion
+### Setup
 
-Define and manage volumes in Docker Compose
-https://docs.docker.com/reference/compose-file/volumes/
+**1. Clone the repository**
 
-Bind mounts
+```bash
+git clone https://github.com/<login>/inception.git
+cd inception
+```
+
+**2. Configure your credentials**
+
+Copy the example env file and fill in your values:
+
+```bash
+cp srcs/.env.example srcs/.env
+nano srcs/.env
+```
+
+**3. Replace `login` with your 42 username**
+
+In the `Makefile`:
+```makefile
+LOGIN = your_login
+```
+
+In `srcs/requirements/nginx/Dockerfile`, update the certificate subject:
+```
+-subj "/C=ES/.../CN=your_login.42.fr"
+```
+
+In `srcs/.env`:
+```
+WP_URL=https://your_login.42.fr
+```
+
+**4. Add your domain to `/etc/hosts`**
+
+```bash
+echo "127.0.0.1 your_login.42.fr" | sudo tee -a /etc/hosts
+```
+
+### Running the project
+
+```bash
+# Build images and start all containers
+make
+
+# Stop all containers
+make down
+
+# View logs
+make logs
+
+# Full cleanup (removes containers, images, and data)
+make fclean
+
+# Rebuild from scratch
+make re
+```
+
+### Accessing the services
+
+| Service | URL |
+|---------|-----|
+| WordPress site | `https://your_login.42.fr` |
+| WordPress admin | `https://your_login.42.fr/wp-admin` |
+
+> Note: Your browser will show a security warning because the TLS certificate is self-signed. This is expected — proceed to the site manually.
+
+---
+
+## Resources
+
+### Documentation
+
+- [Docker official documentation](https://docs.docker.com/)
+- [Docker Compose file reference](https://docs.docker.com/compose/compose-file/)
+- [NGINX documentation](https://nginx.org/en/docs/)
+- [MariaDB Knowledge Base](https://mariadb.com/kb/en/)
+- [WordPress Developer Documentation](https://developer.wordpress.org/)
+- [WP-CLI documentation](https://wp-cli.org/)
+- [PHP-FPM documentation](https://www.php.net/manual/en/install.fpm.php)
+- [Debian releases](https://www.debian.org/releases/)
+
+### Articles & Tutorials
+
+- [Docker networking overview](https://docs.docker.com/network/)
+- [Docker volumes documentation](https://docs.docker.com/storage/volumes/)
+- [Understanding Docker bind mounts vs volumes](https://docs.docker.com/storage/)
+- [TLS protocol versions explained](https://www.cloudflare.com/learning/ssl/what-is-tls/)
+- [FastCGI and php-fpm with NGINX](https://www.nginx.com/resources/wiki/start/topics/examples/phpfcgi/)
+
+### AI Usage
+
+**Claude (Anthropic)** was used during this project for the following tasks:
+
+- **Project scaffolding** — generating the initial structure of Dockerfiles, `docker-compose.yml`, and the Makefile based on the project requirements
+- **Configuration files** — writing the NGINX configuration (`nginx.conf`) with correct TLS settings and FastCGI proxy rules
+- **Shell scripting** — writing the MariaDB initialization script (`create_db.sh`) and the WordPress automated setup script (`wp-setup.sh`)
+- **Explanations and understanding** — clarifying concepts such as named volumes vs bind mounts, Docker networking, `depends_on` limitations, and TLS configuration
+- **Debugging guidance** — explaining why certain configurations (startup wait loops, `restart` policies, shared volumes) are necessary
+
+All generated code was reviewed, understood, and adapted to meet the specific requirements of the project. AI was used as a learning and productivity tool, not as a replacement for understanding the concepts involved.
 https://docs.docker.com/engine/storage/bind-mounts/
