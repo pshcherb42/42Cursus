@@ -61,4 +61,4 @@ fi
 
 # Start php-fpm in foreground
 echo "Starting php-fpm..."
-exec php-fpm7.4 -F
+exec php-fpm$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") -F
