@@ -11,7 +11,7 @@ RUN mkdir -p /etc/nginx/ssl && \
     -newkey rsa:2048 \
     -keyout /etc/nginx/ssl/inception.key \
     -out /etc/nginx/ssl/inception.crt \
-    -subj "/C=ES/ST=Catalonia/L=Barcelona/O=42Barcelona/CN=login.42.fr"
+    -subj "/C=ES/ST=Catalonia/L=Barcelona/O=42Barcelona/CN=pshcherb.42.fr"
 
 COPY conf/nginx.conf /etc/nginx/sites-available/default
 

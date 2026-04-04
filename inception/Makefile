@@ -1,6 +1,4 @@
-Copy
-
-LOGIN		= pshcherb42
+LOGIN		= pshcherb
 DATA_DIR	= /home/$(LOGIN)/data
 COMPOSE		= docker compose -f srcs/docker-compose.yml
  
@@ -23,7 +21,7 @@ clean: down
  
 # Full cleanup including host data directories
 fclean: clean
-	sudo rm -rf $(DATA_DIR)/wordpress $(DATA_DIR)/mariadb
+	sudo rm -rf $(DATA_DIR)/wordpress $(DATA_DIR)/mariadb $(DATA_DIR)/portainer
 	docker system prune -af --volumes || true
  
 re: fclean all
@@ -31,9 +29,11 @@ re: fclean all
 create_dirs:
 	@mkdir -p $(DATA_DIR)/wordpress
 	@mkdir -p $(DATA_DIR)/mariadb
+	@mkdir -p $(DATA_DIR)/portainer
  
 logs:
 	$(COMPOSE) logs -f
  
 ps:
 	$(COMPOSE) ps
+
